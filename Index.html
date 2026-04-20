@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Katzenbaum Blog – Schulprojekt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #fafaf7;
+      --bg2:     #f2f0ea;
+      --ink:     #1a1814;
+      --ink2:    #5a5650;
+      --ink3:    #9a9490;
+      --accent:  #c85a2a;
+      --accent2: #e8a882;
+      --line:    rgba(26,24,20,.1);
+      --white:   #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--white);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 3rem;
+    }
+    .site-title {
+      font-family: 'Lora', serif;
+      font-size: 1.4rem; letter-spacing: .02em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .site-title span { color: var(--accent); font-style: italic; }
+    .header-meta {
+      font-size: .78rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--ink3);
+    }
+    .header-nav {
+      border-top: 1px solid var(--line);
+      display: flex; gap: 0; justify-content: center;
+    }
+    .header-nav a {
+      padding: .7rem 2rem;
+      font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+      text-decoration: none; color: var(--ink2);
+      border-right: 1px solid var(--line);
+      transition: color .2s, background .2s;
+    }
+    .header-nav a:first-child { border-left: 1px solid var(--line); }
+    .header-nav a:hover, .header-nav a.active {
+      color: var(--accent); background: var(--bg);
+    }
+
+    /* ── VIEWS ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── HOME VIEW ── */
+
+    /* Hero post */
+    .hero-post {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 480px; cursor: pointer;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-post:hover .hero-thumb { transform: scale(1.03); }
+    .hero-thumb-wrap {
+      overflow: hidden;
+      background: var(--bg2);
+    }
+    .hero-thumb {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .5s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-thumb svg { width: 100%; height: 100%; }
+    .hero-content {
+      padding: 4rem 3.5rem;
+      display: flex; flex-direction: column; justify-content: center;
+      background: var(--white);
+    }
+    .post-week {
+      font-size: .75rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--accent); font-weight: 500; margin-bottom: .9rem;
+    }
+    .hero-content h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem); line-height: 1.25;
+      color: var(--ink); margin-bottom: 1.2rem;
+    }
+    .hero-content h1 em { font-style: italic; color: var(--accent); }
+    .hero-excerpt {
+      font-size: .97rem; line-height: 1.8; color: var(--ink2);
+      max-width: 44ch; margin-bottom: 2rem;
+    }
+    .read-link {
+      display: inline-flex; align-items: center; gap: .6rem;
+      font-size: .82rem; letter-spacing: .1em; text-transform: uppercase;
+      font-weight: 500; color: var(--accent); text-decoration: none;
+      border-bottom: 1.5px solid var(--accent); padding-bottom: .15rem;
+      width: fit-content; transition: gap .2s;
+      background: none; border-top: none; border-left: none; border-right: none;
+      cursor: pointer;
+    }
+    .read-link:hover { gap: 1rem; }
+
+    /* Posts grid */
+    .posts-section { padding: 3.5rem 3rem; max-width: 1200px; margin: 0 auto; }
+    .posts-section-title {
+      font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--ink3); margin-bottom: 2rem;
+      padding-bottom: .8rem; border-bottom: 1px solid var(--line);
+    }
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .post-card {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: .5rem; overflow: hidden;
+      cursor: pointer; transition: box-shadow .25s, transform .25s;
+    }
+    .post-card:hover {
+      box-shadow: 0 12px 40px rgba(26,24,20,.09);
+      transform: translateY(-4px);
+    }
+    .card-thumb {
+      height: 180px; background: var(--bg2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .card-thumb svg { width: 100%; height: 100%; transition: transform .4s; }
+    .post-card:hover .card-thumb svg { transform: scale(1.06); }
+    .card-body { padding: 1.6rem; }
+    .card-week { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: .5rem; }
+    .card-title { font-family: 'Lora', serif; font-size: 1.15rem; line-height: 1.35; color: var(--ink); margin-bottom: .7rem; }
+    .card-excerpt { font-size: .86rem; line-height: 1.7; color: var(--ink2); }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.6rem; border-top: 1px solid var(--line);
+      font-size: .78rem; color: var(--ink3);
+    }
+    .card-date { }
+    .card-arrow { color: var(--accent); font-size: 1rem; }
+
+    /* ── ÜBER UNS ── */
+    .about-section {
+      max-width: 720px; margin: 5rem auto; padding: 0 2rem;
+      text-align: center;
+    }
+    .about-section h2 {
+      font-family: 'Lora', serif; font-size: 2.2rem; margin-bottom: 1.2rem;
+    }
+    .about-section h2 em { color: var(--accent); font-style: italic; }
+    .about-section p { font-size: 1rem; line-height: 1.85; color: var(--ink2); margin-bottom: 1.2rem; }
+    .about-divider {
+      width: 3rem; height: 2px; background: var(--accent);
+      margin: 2rem auto;
+    }
+
+    /* ── SINGLE POST VIEW ── */
+    .post-view { max-width: 740px; margin: 0 auto; padding: 3.5rem 2rem 6rem; }
+    .post-back {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--ink2); text-decoration: none;
+      background: none; border: none; cursor: pointer;
+      margin-bottom: 3rem; transition: color .2s;
+    }
+    .post-back:hover { color: var(--accent); }
+    .post-header { border-bottom: 1px solid var(--line); padding-bottom: 2.5rem; margin-bottom: 2.5rem; }
+    .post-view .post-week { margin-bottom: .8rem; }
+    .post-view h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(2rem, 5vw, 3rem); line-height: 1.2; color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    .post-view h1 em { color: var(--accent); font-style: italic; }
+    .post-info { font-size: .82rem; color: var(--ink3); }
+    .post-featured-img {
+      width: 100%; height: 320px; background: var(--bg2);
+      border-radius: .4rem; margin-bottom: 2.5rem;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .post-featured-img svg { width: 100%; height: 100%; }
+    .post-body h2 {
+      font-family: 'Lora', serif; font-size: 1.35rem; color: var(--ink);
+      margin: 2.5rem 0 .8rem;
+    }
+    .post-body p { font-size: 1.02rem; line-height: 1.9; color: var(--ink2); margin-bottom: 1.2rem; }
+    .post-body ul { margin: 0 0 1.2rem 1.5rem; }
+    .post-body ul li { font-size: 1rem; line-height: 1.8; color: var(--ink2); margin-bottom: .3rem; }
+    .post-body blockquote {
+      border-left: 3px solid var(--accent); padding: 1rem 1.5rem;
+      margin: 2rem 0; background: var(--bg2); border-radius: 0 .3rem .3rem 0;
+      font-family: 'Lora', serif; font-style: italic;
+      font-size: 1.1rem; color: var(--ink);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); color: rgba(250,250,247,.45);
+      text-align: center; padding: 3rem 2rem;
+      font-size: .8rem; letter-spacing: .08em;
+    }
+    footer strong { color: var(--accent2); }
+
+    /* ── MISC ── */
+    @media (max-width: 760px) {
+      .header-top { padding: 1rem 1.2rem; }
+      .hero-post { grid-template-columns: 1fr; }
+      .hero-thumb-wrap { height: 260px; }
+      .hero-content { padding: 2rem 1.5rem; }
+      .posts-section { padding: 2.5rem 1.2rem; }
+    }
+
+    /* Fade-in on load */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-post  { animation: fadeUp .6s .05s both; }
+    .post-card  { animation: fadeUp .5s both; }
+    .post-card:nth-child(2) { animation-delay: .1s; }
+    .post-card:nth-child(3) { animation-delay: .2s; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a class="site-title" href="#" onclick="showView('home')">Katzen<span>baum</span> Blog</a>
+    <span class="header-meta">Schulprojekt &nbsp;·&nbsp; 2025</span>
+  </div>
+  <nav class="header-nav">
+    <a href="#" class="active" id="nav-home" onclick="showView('home'); return false;">Blog</a>
+    <a href="#" id="nav-about" onclick="showView('about'); return false;">Über das Projekt</a>
+  </nav>
+</header>
+
+<!-- ══════════ HOME VIEW ══════════ -->
+<div class="view active" id="view-home">
+
+  <!-- HERO POST (neuester) -->
+  <div class="hero-post" onclick="showPost(0)">
+    <div class="hero-thumb-wrap">
+      <div class="hero-thumb">
+        <!-- Illustration Woche 3 -->
+        <svg viewBox="0 0 600 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="480" fill="#f2f0ea"/>
+          <!-- Work table -->
+          <rect x="80" y="300" width="440" height="16" rx="4" fill="#c8a87a"/>
+          <rect x="120" y="316" width="12" height="100" fill="#a08060"/>
+          <rect x="468" y="316" width="12" height="100" fill="#a08060"/>
+          <!-- Katzenbaum auf dem Tisch -->
+          <rect x="240" y="160" width="120" height="140" rx="4" fill="#e8dfc8"/>
+          <rect x="286" y="80" width="28" height="220" rx="6" fill="#5c3d2e"/>
+          <!-- Sisal -->
+          <line x1="288" y1="100" x2="312" y2="100" stroke="#c8a87a" stroke-width="2" stroke-dasharray="3 2"/>
+          <line x1="288" y1="112" x2="312" y2="112" stroke="#c8a87a" stroke-width="2" stroke-dasharray="3 2"/>
+          <line x1="288" y1="124" x2="312" y2="124" stroke="#c8a87a" stroke-width="2" stroke-dasharray="3 2"/>
+          <line x1="288" y1="136" x2="312" y2="136" stroke="#c8a87a" stroke-width="2" stroke-dasharray="3 2"/>
+          <line x1="288" y1="148" x2="312" y2="148" stroke="#c8a87a" stroke-width="2" stroke-dasharray="3 2"/>
+          <line x1="288" y1="160" x2="312" y2="160" stroke="#c8a87a" stroke-width="2" stroke-dasharray="3 2"/>
+          <!-- Platform -->
+          <rect x="250" y="190" width="100" height="14" rx="4" fill="#7a5a46"/>
+          <!-- Tools on table -->
+          <rect x="130" y="270" width="60" height="8" rx="3" fill="#5c3d2e" transform="rotate(-15 160 274)"/>
+          <rect x="370" y="265" width="50" height="10" rx="3" fill="#888" transform="rotate(10 395 270)"/>
+          <!-- Sisal roll -->
+          <circle cx="170" cy="268" r="24" fill="#c8a87a" opacity=".7"/>
+          <circle cx="170" cy="268" r="14" fill="#e8dfc8"/>
+          <!-- Cat watching -->
+          <circle cx="460" cy="246" r="28" fill="#5c3d2e"/>
+          <polygon points="448,226 440,208 458,226" fill="#5c3d2e"/>
+          <polygon points="472,226 480,208 462,226" fill="#5c3d2e"/>
+          <ellipse cx="452" cy="248" rx="4" ry="5" fill="#f5f0e8"/>
+          <ellipse cx="468" cy="248" rx="4" ry="5" fill="#f5f0e8"/>
+          <circle cx="452" cy="249" r="2.5" fill="#1e1a14"/>
+          <circle cx="468" cy="249" r="2.5" fill="#1e1a14"/>
+          <!-- Werkzeug Box -->
+          <rect x="340" y="250" width="80" height="52" rx="4" fill="#c8a87a" opacity=".6"/>
+          <rect x="350" y="245" width="60" height="10" rx="3" fill="#a08060" opacity=".8"/>
+        </svg>
+      </div>
+    </div>
+    <div class="hero-content">
+      <p class="post-week">Woche 3 &nbsp;·&nbsp; Neuester Beitrag</p>
+      <h1>Sisal wickeln &amp; erste <em>Etage</em> montieren</h1>
+      <p class="hero-excerpt">Diese Woche wurde es handwerklich: Das Sisalseil musste möglichst gleichmässig und fest um den Pfosten gewickelt werden. Ausserdem habe ich die erste Plattform angebracht – mit einem kleinen Missgeschick dabei...</p>
+      <button class="read-link" onclick="showPost(0)">Weiterlesen →</button>
+    </div>
+  </div>
+
+  <!-- ÄLTERE POSTS -->
+  <div class="posts-section">
+    <p class="posts-section-title">Alle Beiträge</p>
+    <div class="posts-grid">
+
+      <div class="post-card" onclick="showPost(1)">
+        <div class="card-thumb">
+          <svg viewBox="0 0 300 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="300" height="180" fill="#f2f0ea"/>
+            <!-- Blueprint / Sketch aesthetic -->
+            <rect x="50" y="30" width="200" height="130" rx="3" fill="#e8dfc8" stroke="#c8a87a" stroke-width="1"/>
+            <!-- Grid -->
+            <line x1="50" y1="60" x2="250" y2="60" stroke="#c8a87a" stroke-width=".5" opacity=".5"/>
+            <line x1="50" y1="90" x2="250" y2="90" stroke="#c8a87a" stroke-width=".5" opacity=".5"/>
+            <line x1="50" y1="120" x2="250" y2="120" stroke="#c8a87a" stroke-width=".5" opacity=".5"/>
+            <line x1="100" y1="30" x2="100" y2="160" stroke="#c8a87a" stroke-width=".5" opacity=".5"/>
+            <line x1="150" y1="30" x2="150" y2="160" stroke="#c8a87a" stroke-width=".5" opacity=".5"/>
+            <line x1="200" y1="30" x2="200" y2="160" stroke="#c8a87a" stroke-width=".5" opacity=".5"/>
+            <!-- Sketch of tree -->
+            <rect x="138" y="55" width="24" height="80" rx="3" stroke="#5c3d2e" stroke-width="2" fill="none"/>
+            <rect x="110" y="100" width="80" height="10" rx="2" stroke="#5c3d2e" stroke-width="2" fill="none"/>
+            <rect x="118" y="48" width="64" height="10" rx="2" stroke="#5c3d2e" stroke-width="2" fill="none"/>
+            <!-- Arrows -->
+            <line x1="90" y1="90" x2="112" y2="90" stroke="#c85a2a" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- Pencil -->
+            <rect x="220" y="130" width="8" height="34" rx="2" fill="#f0c060" transform="rotate(-30 224 147)"/>
+            <polygon points="220,158 228,158 224,168" fill="#1a1814" transform="rotate(-30 224 163)"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <p class="card-week">Woche 2</p>
+          <h3 class="card-title">Planung &amp; Materialeinkauf – Was kostet das eigentlich?</h3>
+          <p class="card-excerpt">Skizzen, Massangaben und ein Ausflug in den Baumarkt. Was ich dort gelernt habe...</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-date">14. April 2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="post-card" onclick="showPost(2)">
+        <div class="card-thumb">
+          <svg viewBox="0 0 300 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="300" height="180" fill="#f2f0ea"/>
+            <!-- Big question mark / idea -->
+            <circle cx="150" cy="90" r="65" fill="#e8dfc8" stroke="#c8a87a" stroke-width="1.5"/>
+            <!-- Cat silhouette small -->
+            <circle cx="150" cy="76" r="22" fill="#5c3d2e"/>
+            <polygon points="141,61 135,48 149,61" fill="#5c3d2e"/>
+            <polygon points="159,61 165,48 151,61" fill="#5c3d2e"/>
+            <ellipse cx="143" cy="78" rx="3.5" ry="4" fill="#f5f0e8"/>
+            <ellipse cx="157" cy="78" rx="3.5" ry="4" fill="#f5f0e8"/>
+            <circle cx="143" cy="79" r="2" fill="#1e1a14"/>
+            <circle cx="157" cy="79" r="2" fill="#1e1a14"/>
+            <!-- Lightbulb above -->
+            <circle cx="150" cy="28" r="14" fill="#f0c060" opacity=".9"/>
+            <rect x="146" y="40" width="8" height="6" rx="1" fill="#a08040"/>
+            <line x1="150" y1="10" x2="150" y2="4" stroke="#f0c060" stroke-width="2"/>
+            <line x1="164" y1="14" x2="168" y2="10" stroke="#f0c060" stroke-width="2"/>
+            <line x1="136" y1="14" x2="132" y2="10" stroke="#f0c060" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <p class="card-week">Woche 1</p>
+          <h3 class="card-title">Warum ein Katzenbaum? – Die Projektidee</h3>
+          <p class="card-excerpt">Wie alles begann: Meine Katze Milo, zu wenig Platz und eine Schulaufgabe als Startschuss.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-date">7. April 2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <!-- PLATZHALTER für zukünftige Wochen -->
+      <div class="post-card" style="opacity:.45; pointer-events:none;">
+        <div class="card-thumb" style="background:#f2f0ea; display:flex; align-items:center; justify-content:center;">
+          <svg viewBox="0 0 300 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="300" height="180" fill="#f2f0ea"/>
+            <rect x="100" y="70" width="100" height="60" rx="6" stroke="#c8a87a" stroke-width="1.5" stroke-dasharray="6 4" fill="none"/>
+            <text x="150" y="103" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" fill="#c8a87a">Woche 4</text>
+            <text x="150" y="120" text-anchor="middle" font-family="Outfit, sans-serif" font-size="10" fill="#c8a87a">Kommt bald...</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <p class="card-week">Woche 4</p>
+          <h3 class="card-title">Kommt bald...</h3>
+          <p class="card-excerpt">Dieser Beitrag wird nächste Woche veröffentlicht.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-date">— . April 2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ÜBER VIEW ══════════ -->
+<div class="view" id="view-about">
+  <div class="about-section">
+    <p style="font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;">Über das Projekt</p>
+    <h2>Was ist der <em>Katzenbaum-Blog?</em></h2>
+    <div class="about-divider"></div>
+    <p>Dieses Blog entstand als Teil eines Schulprojekts. Ich baue einen Katzenbaum von Grund auf selbst – von der ersten Idee über die Planung bis hin zum fertigen Produkt.</p>
+    <p>Jede Woche gibt es einen neuen Beitrag: Was wurde gemacht? Was hat funktioniert? Was ist schiefgelaufen? So entsteht eine ehrliche Dokumentation des gesamten Prozesses.</p>
+    <p>Das Ziel ist nicht nur ein schöner Katzenbaum am Ende – sondern auch zu lernen, wie man ein Handwerksprojekt strukturiert plant und umsetzt.</p>
+    <div class="about-divider"></div>
+    <p style="font-size:.88rem; color:var(--ink3);">Schulprojekt 2025 &nbsp;·&nbsp; Handwerk & Design</p>
+  </div>
+</div>
+
+<!-- ══════════ POST VIEW ══════════ -->
+<div class="view" id="view-post">
+  <div class="post-view">
+    <button class="post-back" onclick="showView('home')">← Zurück zum Blog</button>
+    <div id="post-content"></div>
+  </div>
+</div>
+
+<footer>
+  <p><strong>Katzenbaum Blog</strong> &nbsp;·&nbsp; Schulprojekt 2025</p>
+  <p style="margin-top:.5rem; opacity:.5; font-size:.75rem;">Mit ❤️ für Milo 🐱</p>
+</footer>
+
+<script>
+  // ── POST DATA ──
+  const posts = [
+    {
+      week: "Woche 3 · 21. April 2025",
+      title: "Sisal wickeln & erste <em>Etage</em> montieren",
+      body: `
+        <div class="post-featured-img">
+          <svg viewBox="0 0 740 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="740" height="320" fill="#f2f0ea"/>
+            <rect x="200" y="80" width="340" height="200" rx="6" fill="#e8dfc8"/>
+            <rect x="346" y="40" width="48" height="240" rx="8" fill="#5c3d2e"/>
+            <line x1="350" y1="60" x2="390" y2="60" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="76" x2="390" y2="76" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="92" x2="390" y2="92" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="108" x2="390" y2="108" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="124" x2="390" y2="124" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="140" x2="390" y2="140" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="156" x2="390" y2="156" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <line x1="350" y1="172" x2="390" y2="172" stroke="#c8a87a" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <rect x="260" y="190" width="220" height="18" rx="6" fill="#7a5a46"/>
+            <rect x="280" y="100" width="180" height="18" rx="6" fill="#7a5a46"/>
+            <circle cx="140" cy="190" r="40" fill="#c8a87a" opacity=".7"/>
+            <circle cx="140" cy="190" r="24" fill="#e8dfc8"/>
+            <circle cx="600" cy="170" r="42" fill="#5c3d2e"/>
+            <polygon points="585,145 577,126 596,145" fill="#5c3d2e"/>
+            <polygon points="615,145 623,126 604,145" fill="#5c3d2e"/>
+            <ellipse cx="590" cy="173" rx="5" ry="6" fill="#f5f0e8"/>
+            <ellipse cx="610" cy="173" rx="5" ry="6" fill="#f5f0e8"/>
+            <circle cx="590" cy="174" r="3" fill="#1e1a14"/>
+            <circle cx="610" cy="174" r="3" fill="#1e1a14"/>
+          </svg>
+        </div>
+        <div class="post-body">
+          <h2>Das Sisal-Chaos</h2>
+          <p>Diese Woche war eindeutig die anstrengendste bisher. Das Sisalseil um den Pfosten zu wickeln klingt einfach – ist es aber nicht. Das Seil muss gleichmässig gespannt sein, darf keine Lücken haben und soll gerade verlaufen. Nach etwa 20 Minuten hatte ich einen krummen, lückenhaften Anfang und musste alles nochmal aufmachen.</p>
+          <blockquote>«Gleichmässig wickeln heisst: immer gleich viel Kraft, immer gleich viel Abstand. Klingt banal, ist aber echte Handarbeit.»</blockquote>
+          <h2>Der Trick mit dem Heisskleber</h2>
+          <p>Nach einigem Ausprobieren habe ich herausgefunden, dass man das Seilende nicht nur festkleben, sondern zusätzlich mit einem kleinen Nagel sichern sollte. So rutscht der Anfang nicht weg, während man weiterwickelt. Das hat den Unterschied gemacht.</p>
+          <h2>Erste Etage – fast perfekt</h2>
+          <p>Die mittlere Plattform habe ich mit zwei langen Schrauben durch den Pfosten befestigt. Beim ersten Versuch war sie leicht schief – das musste ich korrigieren. Tipp: Wasserwaage benutzen, bevor man die Schraube ganz festzieht!</p>
+          <ul>
+            <li>✅ Sisal auf ca. 80 cm gewickelt</li>
+            <li>✅ Mittlere Plattform montiert</li>
+            <li>⏳ Obere Plattform + Plüsch fehlt noch</li>
+          </ul>
+          <p>Nächste Woche kommt die Topplattform dran – und dann kann ich Milo das erste Mal drauflassen. Ich bin gespannt wie sie reagiert!</p>
+        </div>`
+    },
+    {
+      week: "Woche 2 · 14. April 2025",
+      title: "Planung & Materialeinkauf – Was kostet das <em>eigentlich?</em>",
+      body: `
+        <div class="post-featured-img">
+          <svg viewBox="0 0 740 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="740" height="320" fill="#f2f0ea"/>
+            <rect x="120" y="40" width="500" height="240" rx="4" fill="#fffef8" stroke="#c8a87a" stroke-width="1.5"/>
+            <line x1="120" y1="80" x2="620" y2="80" stroke="#e8dfc8" stroke-width="1"/>
+            <line x1="120" y1="120" x2="620" y2="120" stroke="#e8dfc8" stroke-width="1"/>
+            <line x1="120" y1="160" x2="620" y2="160" stroke="#e8dfc8" stroke-width="1"/>
+            <line x1="120" y1="200" x2="620" y2="200" stroke="#e8dfc8" stroke-width="1"/>
+            <line x1="120" y1="240" x2="620" y2="240" stroke="#e8dfc8" stroke-width="1"/>
+            <rect x="140" y="52" width="120" height="16" rx="3" fill="#c8a87a" opacity=".5"/>
+            <rect x="140" y="92" width="200" height="12" rx="3" fill="#5c3d2e" opacity=".25"/>
+            <rect x="140" y="132" width="160" height="12" rx="3" fill="#5c3d2e" opacity=".25"/>
+            <rect x="140" y="172" width="240" height="12" rx="3" fill="#5c3d2e" opacity=".25"/>
+            <rect x="140" y="212" width="180" height="12" rx="3" fill="#5c3d2e" opacity=".25"/>
+            <rect x="500" y="92" width="80" height="12" rx="3" fill="#c85a2a" opacity=".5"/>
+            <rect x="500" y="132" width="60" height="12" rx="3" fill="#c85a2a" opacity=".5"/>
+            <rect x="500" y="172" width="90" height="12" rx="3" fill="#c85a2a" opacity=".5"/>
+            <rect x="500" y="212" width="70" height="12" rx="3" fill="#c85a2a" opacity=".5"/>
+            <line x1="120" y1="260" x2="620" y2="260" stroke="#5c3d2e" stroke-width="1.5"/>
+            <rect x="500" y="265" width="100" height="14" rx="3" fill="#5c3d2e" opacity=".7"/>
+          </svg>
+        </div>
+        <div class="post-body">
+          <h2>Erst planen, dann kaufen</h2>
+          <p>Bevor ich irgendetwas kaufe, musste ich genau wissen, was ich brauche. Also habe ich zuerst eine Skizze gezeichnet und Masse festgelegt: Grundplatte 60×60 cm, Pfosten 120 cm hoch, zwei Etagen in ca. 70 cm und 110 cm Höhe.</p>
+          <h2>Der Baumarkt</h2>
+          <p>Im Baumarkt habe ich gemerkt: Holz ist teurer als gedacht. Ein einziger Pfosten kostet schon fast 15 Franken. Das Sisalseil (50 m) war günstig – rund 8 Franken. Alles zusammen hat das Material etwa 55 Franken gekostet.</p>
+          <blockquote>«Ich dachte, das kostet vielleicht 20 Franken. Nein. 55 Franken – und das ohne Werkzeug.»</blockquote>
+          <h2>Einkaufsliste final</h2>
+          <ul>
+            <li>Holzpfosten Ø 10 cm, 120 cm – CHF 14.90</li>
+            <li>MDF-Platten (3×) – CHF 18.50</li>
+            <li>Sisalseil 50 m – CHF 7.80</li>
+            <li>Schrauben + Winkel – CHF 6.20</li>
+            <li>Plüschstoff (Rest) – CHF 4.50</li>
+            <li>Heisskleber-Sticks – CHF 3.20</li>
+          </ul>
+          <p>Total: <strong>CHF 55.10</strong></p>
+          <p>Nächste Woche geht's los mit dem eigentlichen Bauen. Ich freue mich – und bin ein bisschen nervös.</p>
+        </div>`
+    },
+    {
+      week: "Woche 1 · 7. April 2025",
+      title: "Warum ein Katzenbaum? – Die <em>Projektidee</em>",
+      body: `
+        <div class="post-featured-img">
+          <svg viewBox="0 0 740 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="740" height="320" fill="#f2f0ea"/>
+            <circle cx="370" cy="160" r="110" fill="#e8dfc8"/>
+            <circle cx="370" cy="135" r="42" fill="#5c3d2e"/>
+            <polygon points="352,105 342,82 364,105" fill="#5c3d2e"/>
+            <polygon points="388,105 398,82 376,105" fill="#5c3d2e"/>
+            <ellipse cx="358" cy="138" rx="6" ry="7" fill="#f5f0e8"/>
+            <ellipse cx="382" cy="138" rx="6" ry="7" fill="#f5f0e8"/>
+            <circle cx="358" cy="139" r="4" fill="#1e1a14"/>
+            <circle cx="382" cy="139" r="4" fill="#1e1a14"/>
+            <ellipse cx="370" cy="170" rx="32" ry="26" fill="#5c3d2e"/>
+            <path d="M402 180 Q430 160 420 195 Q410 215 396 200" stroke="#5c3d2e" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <circle cx="250" cy="100" r="22" fill="#f0c060" opacity=".85"/>
+            <rect x="246" y="120" width="8" height="6" rx="1" fill="#a08040"/>
+            <line x1="250" y1="74" x2="250" y2="66" stroke="#f0c060" stroke-width="2.5"/>
+            <line x1="268" y1="80" x2="274" y2="74" stroke="#f0c060" stroke-width="2.5"/>
+            <line x1="232" y1="80" x2="226" y2="74" stroke="#f0c060" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <div class="post-body">
+          <h2>Alles begann mit Milo</h2>
+          <p>Meine Katze Milo ist zwei Jahre alt und hat ein Talent dafür, auf Möbel zu klettern, auf die sie nicht klettern sollte. Das Sofa, der Schreibtisch, der Kühlschrank. Als ich dieses Schulprojekt für das Fach Handwerk bekam, war die Idee sofort klar: Ich baue ihr einen eigenen Baum.</p>
+          <blockquote>«Katzen brauchen Höhe – nicht weil sie müssen, sondern weil sie es lieben. Ein Katzenbaum ist ihr Reich.»</blockquote>
+          <h2>Warum nicht einfach kaufen?</h2>
+          <p>Ein guter Katzenbaum kostet im Laden zwischen 80 und 200 Franken. Viele sehen aber hässlich aus und passen nicht zum Wohnzimmer. Das Schulprojekt ist also auch eine Chance, etwas zu bauen, das schön ist und genau zu uns passt.</p>
+          <h2>Was ist das Ziel?</h2>
+          <p>Am Ende des Projekts soll ein stabiler, schöner Katzenbaum aus Naturmaterialien stehen – und dieser Blog dokumentiert den ganzen Weg von der Idee bis zum fertigen Produkt, ehrlich und mit allen Fehlern.</p>
+          <ul>
+            <li>🐱 Zielgruppe: Milo (und meine Familie)</li>
+            <li>🌿 Material: Holz, Sisal, Plüsch</li>
+            <li>📅 Zeitplan: 6 Wochen</li>
+            <li>💰 Budget: max. CHF 70.–</li>
+          </ul>
+          <p>Nächste Woche: Materialliste erstellen und in den Baumarkt gehen. Dann wird's ernst!</p>
+        </div>`
+    }
+  ];
+
+  // ── NAVIGATION ──
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.querySelectorAll('.header-nav a').forEach(a => a.classList.remove('active'));
+    if (name === 'home') document.getElementById('nav-home').classList.add('active');
+    if (name === 'about') document.getElementById('nav-about').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showPost(index) {
+    const p = posts[index];
+    document.getElementById('post-content').innerHTML = `
+      <div class="post-header">
+        <p class="post-week">${p.week}</p>
+        <h1>${p.title}</h1>
+      </div>
+      ${p.body}
+    `;
+    showView('post');
+  }
+</script>
+
+</body>
+</html>
